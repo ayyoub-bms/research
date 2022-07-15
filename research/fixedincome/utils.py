@@ -6,7 +6,7 @@
 
 import numpy as np
 
-from fdates import utils as _ut
+from dates import utils as _ut
 
 
 def futures_reset(dates):
