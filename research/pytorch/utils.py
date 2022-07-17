@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 
+
 def get_device():
     kwargs = {}
     device_ = torch.device('cpu')
@@ -21,7 +22,7 @@ class RegularizedModule(torch.nn.Module):
     def _get_params(self, bias=False):
         params = []
         if bias:
-            for param im self.parameters():
+            for param in self.parameters():
                 params.append(param.view(-1))
             return torch.cat(params)
 
