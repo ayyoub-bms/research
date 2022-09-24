@@ -1,7 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-from scipy.optimize import newton
 
 
 ln = np.log
