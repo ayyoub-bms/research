@@ -37,19 +37,11 @@ def mean_variance_with_risk_aversion(cov, mean_returns, aversion,
     gamma.value = aversion
     ptf_ret = portfolio_returns(mean_returns, w)
     ptf_var = cp.quad_form(w, cov)
-    constraints = []
-
-    if long_only:
-        constraints.append(w >= 0)
-
-    if leverage == 1:
-        constraints.append(cp.sum(w) == 1)
-
-    elif leverage > 1:
-        constraints.append(cp.norm(w, 1) <= leverage)
-    else:
-        raise ValueError('Leverage should be >= 1')
-
+    constraints = _add_constraints(
+        w,
+        leverage=leverage,
+        long_only=long_only
+    )
     prob = cp.Problem(cp.Maximize(ptf_ret - gamma * ptf_var), constraints)
     prob.solve()
     return w.value
