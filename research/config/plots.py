@@ -4,10 +4,8 @@ import matplotlib.pyplot as plt
 import os
 import matplotlib.pyplot as plt
 
-green = '#34BE54'
-blue = '#4482F4'
-dark_gray = '#4B4B4B'
-font = 'Stix'
+dgray = '#4B4B4B'
+font = 'Sans'
 
 _params = dict(
     ls=10,
@@ -20,16 +18,17 @@ _params = dict(
 )
 
 
-def init(width=None, height=None, dpi=None):
-    width = 7 if width is None else width
-    height = width / 1.618 if height is None else height
+def init(width=None, height=None, dpi=120):
+    width = width or 7
+    height = height or width / 1.618
+
     _get = _params.get
     # Font configuration
     plt.rc('font', size=_get('fs'), family=[font, 'Serif'])
 
     # Figure configuration
-    plt.rc('figure', figsize=[width, height], dpi=dpi, autolayout=True)
-    # plt.rc('text', usetex=True)
+    plt.rc('figure', figsize=[width, height], dpi=dpi)
+    plt.rc('text', usetex=True)
     plt.rc('lines', linewidth=_get('lw'))
 
     # Axes configuration
@@ -39,7 +38,7 @@ def init(width=None, height=None, dpi=None):
            titlepad=_get('tp'))
 
     toggle_spines(top=False, right=False, bottom=True, left=True)
-    toggle_grid(False)
+    toggle_grid()
 
     # Ticks configuration
     plt.rc('xtick', direction='in', labelsize=_get('ls'))
@@ -52,7 +51,7 @@ def init(width=None, height=None, dpi=None):
     plt.rc('ytick.major', size=_get('mats'))
 
 
-def toggle_grid(toggle, minor=False, major=True):
+def toggle_grid(toggle=True, minor=False, major=True):
     if minor and major:
         which = 'both'
     elif minor:
@@ -63,7 +62,7 @@ def toggle_grid(toggle, minor=False, major=True):
     plt.rc('axes', grid=toggle)
     plt.rc('axes3d', grid=toggle)
     plt.rc('axes.grid', which=which)
-    plt.rc('grid', color=dark_gray, alpha=.7, linestyle='--', linewidth=.5)
+    plt.rc('grid', color=dgray, alpha=.7, linestyle='--', linewidth=.5)
 
 
 def toggle_spines(top=False, right=False, bottom=True, left=True):
@@ -78,3 +77,11 @@ def savefig(directory, filename, ext, fig=None):
         fig.savefig(file)
     else:
         plt.savefig(file)
+
+
+def keep_axes(axes, n):
+    """ Keep only n axes from `axes`"""
+    axes = axes.flat
+    for ax in axes[n:]:
+        ax.remove()
+    return axes[:n]
