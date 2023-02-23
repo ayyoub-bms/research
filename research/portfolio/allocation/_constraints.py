@@ -16,6 +16,7 @@ def _add_constraints(weights, *args, leverage=1, long_only=True):
         constraints.append(cp.norm(weights, 1) <= leverage)
     else:
         raise ValueError('Leverage should be >= 1')
+    return constraints
 
 
 # To be used later
@@ -46,6 +47,6 @@ class ConstraintsBuilder:
     def constraints(self):
         return self._constraints
 
-    @property.setter
+    @constraints.setter
     def constraints(self, *args, **kwargs):
         raise ValueError('Cannot set constraints values')

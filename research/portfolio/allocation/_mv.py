@@ -1,12 +1,15 @@
 import numpy as np
+import cvxpy as cp
+
+from ._constraints import _add_constraints
 
 
-def minimum_volatility(inv_cov, long_only=True):
+def minimum_volatility(cov, leverage=1, long_only=True):
     """Returns the weights for a minimum volatility portfolio
 
     Parameters:
     -----------
-        inv_cov: numpy ndarray
+        cov: numpy ndarray
             The inverse of the covariance matrix of stock returns
         long_only: bool
             The weights positivity constraint (long only portfolios)
@@ -16,10 +19,22 @@ def minimum_volatility(inv_cov, long_only=True):
         w: numpy array
             The portfolio allocations
     """
-    n = inv_cov.shape[0]
-    one = np.ones(n)
-    w = inv_cov @ one
-    w = w / w.sum()
+    n = cov.shape[0]
+
     if long_only:
-        w = .5 * (w + 1/n)
+        w = cp.Variable(n)
+        ptf_var = cp.quad_form(w, cov)
+        constraints = _add_constraints(
+            w,
+            leverage=leverage,
+            long_only=True
+        )
+        print(constraints)
+        prob = cp.Problem(cp.Minimize(ptf_var), constraints)
+        prob.solve()
+        return w.value
+
+    one = np.ones(n)
+    w = np.linalg.pinv(cov) @ one
+    w = w / w.sum()
     return w
