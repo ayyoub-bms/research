@@ -48,7 +48,7 @@ def hierarchical_equal_risk_contribution(cov, pmin=5, pmax=15):
 
     for i, c in clusters.items():
         V = cov.iloc[c, c].values
-        w = inverse_vol(np.sqrt(np.diag(V)))
+        w = inverse_vol(V)
         cluster_risk_contrib[i] = total_risk_contribution(V, w).sum()
         cluster_weights[i] = w
 
@@ -124,11 +124,11 @@ def _build_clusters(link, nb_clusters):
         """ Attribute to each cluster the stocks belonging to it
 
         Recursively add the appropriate stocks from the leaf nodes of the tree
-        to each parent. The idea is to merge the leafs' stocks
-        for each parent up to the root node by concatenating the stocks
-        for the left and right childs. If the clusters dict contains the node, nothing
-        needs to be done, otherwise either we are in a node that is a child of
-        one of the leaf nodes hence we return an empty list or we are one of the parents
+        to each parent. The idea is to merge the leafs' stocks for each parent
+        up to the root node by concatenating the stocks for the left and right
+        childs. If the clusters dict contains the node, nothing needs to be
+        done, otherwise either we are in a node that is a child of one of the
+        leaf nodes hence we return an empty list or we are one of the parents
         and we use recursion to concatenate the leaf's stocks.
         """
         if root < lmin:
@@ -142,15 +142,14 @@ def _build_clusters(link, nb_clusters):
             )
             return clusters[root]
 
-
     clusters = dict()
     level_clusters = _get_leaves(link, nb_clusters)
     lmin = np.inf
-    n = link[-1][3]
-    for l in level_clusters:
+    n = link[-1, 3]
+    for i in level_clusters:
         # retrieves the stocks for the node from the leafs of the tree
-        clusters[l] = _get_stocks(link, l)
-        lmin = min(lmin, l)
+        clusters[i] = _get_stocks(link, i)
+        lmin = min(lmin, i)
 
     _clusters2stocks(link[-1, 0])
     _clusters2stocks(link[-1, 1])

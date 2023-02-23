@@ -43,10 +43,7 @@ def mean_variance_with_risk_aversion(cov, expected_returns, aversion,
         leverage=leverage,
         long_only=long_only
     )
-<<<<<<< HEAD
-=======
 
->>>>>>> 00dc839 (update)
     prob = cp.Problem(cp.Maximize(ptf_ret - gamma * ptf_var), constraints)
     prob.solve()
     return w.value

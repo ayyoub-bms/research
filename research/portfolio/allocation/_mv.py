@@ -29,7 +29,6 @@ def minimum_volatility(cov, leverage=1, long_only=True):
             leverage=leverage,
             long_only=True
         )
-        print(constraints)
         prob = cp.Problem(cp.Minimize(ptf_var), constraints)
         prob.solve()
         return w.value
