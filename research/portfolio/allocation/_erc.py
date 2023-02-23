@@ -2,11 +2,11 @@ import numpy as np
 from scipy.optimize import minimize
 
 
-def risk_parity(cov, leverage=1, long_only=True):
+def risk_parity(cov, leverage=1, long_only=True, scale=1e-5):
 
-    def objective(x): return _objective(x, cov)
+    def objective(x): return _objective(x, cov, scale)
 
-    options = {'ftol': 1e-10, 'maxiter': 5000}
+    options = {'ftol': 1e-6, 'maxiter': 1000}
 
     if leverage == 1:
         constraints = {'type': 'eq', 'fun': lambda x: np.sum(x) - 1}
@@ -22,12 +22,13 @@ def risk_parity(cov, leverage=1, long_only=True):
     if long_only:
         params.update(bounds=[(0, 1) for i in range(cov.shape[0])])
 
-    x0 = inverse_vol(cov)
+    n = cov.shape[0]
+    x0 = np.ones(n) / n
 
-    res = minimize(objective, x0, **params)
+    result = minimize(objective, x0, **params)
 
-    if res.success:
-        return res.x
+    if result.success:
+        return result.x
     else:
         raise ValueError(f'Algorithm failed to converge with reason \n {res}')
 
@@ -38,6 +39,10 @@ def inverse_vol(cov):
     return w / w.sum()
 
 
-def _objective(x, cov):
-    rctrb = (x.T @ cov) * x
-    return np.sum(np.square(np.ravel(rctrb - rctrb.T)))
+def _objective(x, cov, scale):
+    rc = x.dot(cov) * x
+    a = np.reshape(rc, (len(rc), 1))
+    risk_diffs = a - a.transpose()
+    sum_risk_diffs_squared = np.sum(np.square(np.ravel(risk_diffs)))
+    return sum_risk_diffs_squared / scale
+

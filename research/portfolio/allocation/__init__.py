@@ -8,3 +8,7 @@ from ._meanv import (
     mean_variance_maximize_returns,
     mean_variance
 )
+
+
+def normalize_weights(w):
+    return w / w.sum()

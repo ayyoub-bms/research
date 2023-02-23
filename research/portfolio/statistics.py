@@ -23,3 +23,32 @@ def total_risk_contribution(cov: np.ndarray, w: np.ndarray) -> np.ndarray:
 def risk_budget(cov: np.ndarray, w: np.ndarray) -> np.ndarray:
     """ Returns the % risk budget of each stock"""
     return total_risk_contribution(cov, w) / portfolio_volatility(cov, w)
+
+
+def max_drawdown(x):
+    return np.minimum.accumulate(drawdown(x)).min()*100
+
+
+def drawdown(x):
+    rollingmax = np.maximum.accumulate(x)
+    drawdown = (x - rollingmax) / rollingmax
+    return drawdown
+
+
+def gini(x):
+    x = x[~np.isnan(x)]
+    n = len(x)
+    w = sorted(x)
+    z = 2*(np.arange(n) + 1) - n - 1
+    return np.sum(z * w) / (n*np.sum(w))
+
+
+def herfindahl(x):
+    x = x[~np.isnan(x)]
+    n = 1/len(x)
+    ht = np.power(x, 2).sum()
+    return (ht - n) / (1-n)
+
+
+def turnover(weights, previous_weights=0):
+    return .5 * abs((weights - previous_weights)).sum()

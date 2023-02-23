@@ -12,7 +12,7 @@ _params = dict(
     fs=11,
     ts=13,
     tp=13,
-    lw=.9,
+    lw=1.5,
     mts=4,
     mats=7.5
 )
@@ -21,7 +21,6 @@ _params = dict(
 def init(width=None, height=None, dpi=120):
     width = width or 7
     height = height or width / 1.618
-
     _get = _params.get
     # Font configuration
     plt.rc('font', size=_get('fs'), family=[font, 'Serif'])
@@ -43,7 +42,6 @@ def init(width=None, height=None, dpi=120):
     # Ticks configuration
     plt.rc('xtick', direction='in', labelsize=_get('ls'))
     plt.rc('ytick', direction='in', labelsize=_get('ls'))
-
     plt.rc('xtick.minor', visible=True, size=_get('mts'))
     plt.rc('ytick.minor', visible=True, size=_get('mts'))
 
