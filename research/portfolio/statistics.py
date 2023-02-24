@@ -26,10 +26,11 @@ def risk_budget(cov: np.ndarray, w: np.ndarray) -> np.ndarray:
 
 
 def max_drawdown(x):
-    return np.minimum.accumulate(drawdown(x)).min()*100
+    return np.minimum.accumulate(drawdown(x)).min() * 100
 
 
 def drawdown(x):
+    x = x[~np.isnan(x)]
     rollingmax = np.maximum.accumulate(x)
     drawdown = (x - rollingmax) / rollingmax
     return drawdown
@@ -50,5 +51,5 @@ def herfindahl(x):
     return (ht - n) / (1-n)
 
 
-def turnover(weights, previous_weights=0):
-    return .5 * abs((weights - previous_weights)).sum()
+def turnover(weights, previous_weights, axis=1):
+    return .5 * abs((weights - previous_weights)).sum(axis=axis)
