@@ -48,7 +48,10 @@ def drift_weights(returns: pd.DataFrame,
             curr_rebal_date, next_rebal_date = weights.index[i:i+2]
             block = returns.loc[curr_rebal_date:next_rebal_date]
             drifted.update(period_drift(block, weights.loc[curr_rebal_date]))
-    return drifted.dropna(how='all', axis=0)
+        curr_rebal_date = weights.index[-1]
+        block = returns.loc[curr_rebal_date:]
+        drifted.update(period_drift(block, weights.loc[curr_rebal_date]))
+    return drifted
 
 
 def normalize(w):
@@ -61,7 +64,7 @@ def period_drift(returns: pd.DataFrame, weights: pd.Series):
     drifted = pd.DataFrame(index=returns.index, columns=returns.columns)
     drifted.iloc[0] = weights
     N = returns.shape[0]
-    for i in range(1, N-1):
+    for i in range(1, N):
         numer = drifted.iloc[i - 1, :] * (1 + returns.iloc[i, :])
         w = numer / numer.sum()
         drifted.iloc[i, :] = w

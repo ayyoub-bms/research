@@ -53,3 +53,13 @@ def herfindahl(x):
 
 def turnover(weights, previous_weights, axis=1):
     return .5 * abs((weights - previous_weights)).sum(axis=axis)
+
+
+def diversification_ratio(cov, w):
+    vol = np.sqrt(np.diag(cov))
+    return (vol.T @ w) / portfolio_volatility(cov, w)
+
+
+def average_correlation(corr):
+    n = corr.shape[0]
+    return (np.sum(corr) - n) / (2*n)
