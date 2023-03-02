@@ -1,4 +1,5 @@
 from ._herc import hierarchical_equal_risk_contribution
+from ._hec import hierarchical_equal_correlations
 from ._erc import risk_parity, inverse_vol
 from ._mdp import maximum_diversification
 from ._mv import minimum_volatility

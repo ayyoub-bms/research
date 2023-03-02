@@ -5,12 +5,15 @@ from ._constraints import _add_constraints
 
 
 def minimum_volatility(cov, leverage=1, long_only=True):
-    """Returns the weights for a minimum volatility portfolio
+    """ Returns the weights for a minimum volatility portfolio
 
     Parameters:
     -----------
         cov: numpy ndarray
             The inverse of the covariance matrix of stock returns
+        leverage: float
+            The upper bound for the sum of weights if leverage > 1 or
+            the weights must sum to 1 for a leverage of 1.
         long_only: bool
             The weights positivity constraint (long only portfolios)
 

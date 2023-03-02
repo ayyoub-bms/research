@@ -2,15 +2,15 @@ import numpy as np
 
 from scipy.cluster.hierarchy import linkage
 from ._erc import inverse_vol
+from ..statistics import average_correlation
 from ._hierarchy import (
         _build_clusters,
         _get_number_of_clusters
 )
-from ..statistics import total_risk_contribution
 
 
-def hierarchical_equal_risk_contribution(cov, pmin=5, pmax=15):
-    """Computes the HERC allocations
+def hierarchical_equal_correlations(cov, pmin=5, pmax=15):
+    """Computes the HEC allocations
 
     Parameters:
     -----------
@@ -40,15 +40,16 @@ def hierarchical_equal_risk_contribution(cov, pmin=5, pmax=15):
     nb_clusters = _get_number_of_clusters(link, dissimilarity, pmin, pmax)
 
     allocations = np.ones(nb_stocks)
-    cluster_risk_contrib = dict()
+    cluster_avg_corr = dict()
     cluster_weights = dict()
     link = np.asarray(link, dtype=int)
     leaves, clusters = _build_clusters(link, nb_clusters)
 
     for i, c in clusters.items():
         V = cov.iloc[c, c].values
+        C = corr.iloc[c, c].values
         w = inverse_vol(V)
-        cluster_risk_contrib[i] = total_risk_contribution(V, w).sum()
+        cluster_avg_corr[i] = average_correlation(C)
         cluster_weights[i] = w
 
     for i in range(nb_clusters-1):
@@ -56,10 +57,10 @@ def hierarchical_equal_risk_contribution(cov, pmin=5, pmax=15):
         right = link[nb_stocks - i - 2, 1]
         lstocks = clusters[left]
         rstocks = clusters[right]
-        rcl = cluster_risk_contrib[left]
-        rcr = cluster_risk_contrib[right]
-        rc = rcl + rcr
-        a = rcr / rc
+        acl = cluster_avg_corr[left]
+        acr = cluster_avg_corr[right]
+        rc = acl + acr
+        a = acr / rc
         allocations[lstocks] *= a
         allocations[rstocks] *= (1 - a)
 

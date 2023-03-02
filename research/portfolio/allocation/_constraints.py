@@ -1,7 +1,7 @@
 import cvxpy as cp
 
 
-def _add_constraints(weights, *args, leverage=1, long_only=True):
+def _add_constraints(weights, *args, leverage=None, long_only=True):
 
     constraints = []
     for arg in args:
@@ -9,13 +9,14 @@ def _add_constraints(weights, *args, leverage=1, long_only=True):
     if long_only:
         constraints.append(weights >= 0)
 
-    if leverage == 1:
-        constraints.append(cp.sum(weights) == 1)
+    if leverage is not None:
+        if leverage == 1:
+            constraints.append(cp.sum(weights) == 1)
 
-    elif leverage > 1:
-        constraints.append(cp.norm(weights, 1) <= leverage)
-    else:
-        raise ValueError('Leverage should be >= 1')
+        elif leverage > 1:
+            constraints.append(cp.norm(weights, 1) <= leverage)
+        else:
+            raise ValueError('Leverage should be >= 1')
     return constraints
 
 
